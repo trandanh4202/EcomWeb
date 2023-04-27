@@ -4,18 +4,15 @@ import ShopSection from "./../components/homeComponents/ShopSection";
 import ContactInfo from "./../components/homeComponents/ContactInfo";
 import CalltoActionSection from "./../components/homeComponents/CalltoActionSection";
 import Footer from "./../components/Footer";
-const HomeScreen = ({ search, page, categoryId, brandId }) => {
-  window.scrollTo(0, 0);
+import { useParams } from "react-router";
+const HomeScreen = ({ match }) => {
+  // window.location.reload();
+  const pageId = match.params.pageId;
 
   return (
     <div>
       <Header />
-      <ShopSection
-        search={search}
-        currentPage={page}
-        categoryId={categoryId}
-        brandId={brandId}
-      />
+      <ShopSection pageId={pageId} />
       <CalltoActionSection />
       <ContactInfo />
       <Footer />

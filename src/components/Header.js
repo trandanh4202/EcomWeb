@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
-import { listCart } from "../Redux/Action/CartAction";
 import { getUserDetails, logout } from "../Redux/Action/UserAction";
+import { Link, useHistory } from "react-router-dom";
 
 const Header = () => {
   const dispatch = useDispatch();
-
-  let history = useHistory();
+  const history = useHistory();
   const userDetails = useSelector((state) => state.userDetails);
   const { userInfo } = userDetails;
 
@@ -24,9 +22,9 @@ const Header = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     if (search.trim()) {
-      history.push(`/search/${search}`);
+      history.push(`?search=${search}`);
     } else {
-      history.push("/");
+      history.push(`/`);
     }
   };
   return (
@@ -198,12 +196,21 @@ const Header = () => {
                   </>
                 )}
 
-                <Link to="/cart">
-                  <i className="fas fa-shopping-bag"></i>
-                  <span className="badge">
-                    {cartLists ? cartLists.length : " "}
-                  </span>
-                </Link>
+                {userInfo ? (
+                  <Link to="/cart">
+                    <i className="fas fa-shopping-bag"></i>
+                    <span className="badge">
+                      {cartLists ? cartLists.length : " "}
+                    </span>
+                  </Link>
+                ) : (
+                  <Link to="/login">
+                    <i className="fas fa-shopping-bag"></i>
+                    <span className="badge">
+                      {cartLists ? cartLists.length : " "}
+                    </span>
+                  </Link>
+                )}
               </div>
             </div>
           </div>

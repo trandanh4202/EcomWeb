@@ -1,22 +1,51 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "./../components/Header";
 import { PayPalButton } from "react-paypal-button-v2";
 import { useDispatch, useSelector } from "react-redux";
-import { getOrderDetails } from "../Redux/Action/OrderAction";
+import { getOrderDetails, payOrder } from "../Redux/Action/OrderAction";
 import Loading from "../components/LoadingError/Loading";
 import Message from "../components/LoadingError/Error";
-import { listCart } from "../Redux/Action/CartAction";
+import axios from "axios";
+import { ORDER_PAY_RESET } from "../Redux/Constants/OrderConstants";
 
 const OrderScreen = ({ match }) => {
   window.scrollTo(0, 0);
+  const [sdkReady, setSdkReady] = useState(false);
   const orderId = match.params.id;
   const dispatch = useDispatch();
 
-  // const orderCreate = useSelector((state) => state.orderCreate);
-  // const { order, success, error } = orderCreate;
   const orderDetails = useSelector((state) => state.orderDetails);
   const { orderDetail, loading, error } = orderDetails;
+
+  const orderPay = useSelector((state) => state.orderPay);
+  const { loading: loadingPay, success: successPay } = orderPay;
+
+  if (!loading) {
+    const addDecimals = (num) => {
+      return (Math.round(num * 100) / 100).toFixed(2);
+    };
+    orderDetail.cartItems.itemsPrice = addDecimals(
+      orderDetail.cartItems.reduce(
+        (acc, item) => acc + item.product.price * item.quantity,
+        0
+      )
+    );
+
+    orderDetail.cartItems.shippingPrice = addDecimals(
+      orderDetail.cartItems.itemsPrice > 1000000 ? 0 : 500000
+    );
+
+    orderDetail.cartItems.taxPrice = addDecimals(
+      Number((0.15 * orderDetail.cartItems.itemsPrice).toFixed(2))
+    );
+
+    orderDetail.cartItems.totalPrice = (
+      Number(orderDetail.cartItems.itemsPrice) +
+      Number(orderDetail.cartItems.shippingPrice) +
+      Number(orderDetail.cartItems.taxPrice)
+    ).toFixed(2);
+  }
 
   const userDetails = useSelector((state) => state.userDetails);
   const { userInfo } = userDetails;
@@ -25,16 +54,39 @@ const OrderScreen = ({ match }) => {
   const { addressDetails } = addressDetail;
 
   const cartList = useSelector((state) => state.cartList);
-  const { cartLists, paymentMethod } = cartList;
+  const { paymentMethod } = cartList;
 
   const orderCreate = useSelector((state) => state.orderCreate);
   const { order } = orderCreate;
 
   useEffect(() => {
+    const addPayPalScript = async () => {
+      // const { data: clientId } = await axios.get("/api/config/paypal");
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = `https://www.paypal.com/sdk/js?client-id=Aa0CRVe_s-Re4igGVDSJw2nHebXNvRWSTajR_IvjTSJSWXz6Fh1os6WkD4E5knGOxkuISq4uTopUBJI-`;
+      script.async = true;
+      script.onload = () => {
+        setSdkReady(true);
+      };
+      document.body.appendChild(script);
+    };
+    if (!orderDetail || successPay) {
+      dispatch({ type: ORDER_PAY_RESET });
+      // dispatch(getOrderDetails(orderId));
+    } else if (!order.isPaid) {
+      if (!window.paypal) {
+        addPayPalScript();
+      } else {
+        setSdkReady(true);
+      }
+    }
     dispatch(getOrderDetails(orderId));
-    dispatch(listCart());
-  }, [dispatch, orderId]);
+  }, [dispatch, orderId, successPay, order]);
 
+  const successPaymentHandler = (paymentResult) => {
+    dispatch(payOrder(orderId, paymentResult));
+  };
   return (
     <>
       <Header />
@@ -115,29 +167,29 @@ const OrderScreen = ({ match }) => {
 
             <div className="row order-products justify-content-between">
               <div className="col-lg-8">
-                {cartLists.length === 0 ? (
+                {orderDetail.length === 0 ? (
                   <Message variant="alert-info mt-5">
                     Your order is empty
                   </Message>
                 ) : (
                   <>
-                    {cartLists.map((item) => (
+                    {orderDetail.cartItems.map((item) => (
                       <div className="order-product row">
                         <div className="col-md-3 col-6">
                           <img src={item.product.imageUrl} alt="product" />
                         </div>
                         <div className="col-md-5 col-6 d-flex align-items-center">
-                          <Link to={`/`}>
+                          <Link to={`/product/${item.product.id}`}>
                             <h6>{item.product.name}</h6>
                           </Link>
                         </div>
-                        <div className="mt-3 mt-md-0 col-6 col-md-2  d-flex align-items-center flex-column justify-content-center ">
+                        <div className="mt-3 mt-md-0 col-6 col-md-2 d-flex align-items-center flex-column justify-content-center ">
                           <h4>QUANTITY</h4>
                           <h6>{item.quantity}</h6>
                         </div>
                         <div className="mt-3 mt-md-0 col-md-2 col-6 align-items-end  d-flex flex-column justify-content-center">
                           <h4>SUBTOTAL</h4>
-                          <h6>{order.total}</h6>
+                          <h6>{item.price}</h6>
                         </div>
                       </div>
                     ))}
@@ -152,31 +204,41 @@ const OrderScreen = ({ match }) => {
                       <td>
                         <strong>Products</strong>
                       </td>
-                      <td>$234</td>
+                      <td>${orderDetail.cartItems.itemsPrice}</td>
                     </tr>
                     <tr>
                       <td>
                         <strong>Shipping</strong>
                       </td>
-                      <td>$566</td>
+                      <td>${orderDetail.cartItems.shippingPrice}</td>
                     </tr>
                     <tr>
                       <td>
                         <strong>Tax</strong>
                       </td>
-                      <td>$3</td>
+                      <td>${orderDetail.cartItems.taxPrice}</td>
                     </tr>
                     <tr>
                       <td>
                         <strong>Total</strong>
                       </td>
-                      <td>$567</td>
+                      <td>${orderDetail.cartItems.totalPrice}</td>
                     </tr>
                   </tbody>
                 </table>
-                <div className="col-12">
-                  <PayPalButton amount={345} />
-                </div>
+                {!order.isPaid && (
+                  <div className="col-12">
+                    {loadingPay && <Loading />}
+                    {!sdkReady ? (
+                      <Loading />
+                    ) : (
+                      <PayPalButton
+                        amount={orderDetail.cartItems.totalPrice}
+                        onSuccess={successPaymentHandler}
+                      />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </>

@@ -7,15 +7,14 @@ import Header from "./../components/Header";
 
 const PaymentScreen = ({ history }) => {
   window.scrollTo(0, 0);
-  const address = useSelector((state) => state.address);
-  const { shippingAddress } = address;
+  // const address = useSelector((state) => state.address);
+  // const { shippingAddress } = address;
   const [paymentMethod, setPaymentMethod] = useState("PayPal");
 
   const dispatch = useDispatch();
   // if (!shippingAddress) {
   //   history.push("/shipping");
   // }
-  console.log(store.getState().shippingAddress);
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(savePaymentMethod(paymentMethod));

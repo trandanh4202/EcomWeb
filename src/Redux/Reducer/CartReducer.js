@@ -23,7 +23,7 @@ import {
 export const cartListReducer = (state = { cartLists: [] }, action) => {
   switch (action.type) {
     case CART_LIST_REQUEST:
-      return { loading: true, cartLists: [] };
+      return { loading: true, ...state, cartLists: [] };
     case CART_LIST_SUCCESS:
       return { loading: false, cartLists: action.payload };
     case CART_LIST_FAIL:

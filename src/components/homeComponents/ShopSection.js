@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
 import Rating from "./Rating";
 import Pagination from "./pagination";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,30 +8,66 @@ import Message from "../LoadingError/Error";
 import { getUserDetails } from "../../Redux/Action/UserAction";
 import { listCart } from "../../Redux/Action/CartAction";
 import { listBrands, listCategories } from "../../Redux/Action/FilterAction";
+import {
+  Link,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
 const ShopSection = (props) => {
+  window.scrollTo(0, 0);
   const dispatch = useDispatch();
-  const history = useHistory();
 
-  const { search, currentPage, categoryId, brandId } = props;
   const productList = useSelector((state) => state.productList);
-  const { loading, products, error, page, pageTotal } = productList;
+  const { loading, products, error, pageTotal } = productList;
 
   const categoryList = useSelector((state) => state.categoryList);
   const { categories } = categoryList;
 
   const brandList = useSelector((state) => state.brandList);
   const { brands } = brandList;
-  console.log(props);
+  const search = "";
+  const { pageId } = props;
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
+
   useEffect(() => {
-    dispatch(listProduct(search, currentPage, categoryId, brandId));
+    dispatch(listProduct(search, pageId, selectedCategories, selectedBrands));
     dispatch(getUserDetails());
     dispatch(listCart());
-  }, [dispatch, search, currentPage, categoryId, brandId]);
+  }, [dispatch, search, pageId, selectedCategories, selectedBrands]);
+
   useEffect(() => {
     dispatch(listCategories());
     dispatch(listBrands());
   }, []);
+
+  const handleToggleCategory = (categoryId) => {
+    const index = selectedCategories.indexOf(categoryId);
+    if (index >= 0) {
+      // remove category from selectedCategories
+      const updatedCategories = [...selectedCategories];
+      updatedCategories.splice(index, 1);
+      setSelectedCategories(updatedCategories);
+    } else {
+      // add category to selectedCategories
+      setSelectedCategories([...selectedCategories, categoryId]);
+    }
+  };
+
+  const handleToggleBrand = (brandId) => {
+    const index = selectedBrands.indexOf(brandId);
+    if (index >= 0) {
+      // remove category from selectedBrands
+      const updateBrands = [...selectedBrands];
+      updateBrands.splice(index, 1);
+      setSelectedBrands(updateBrands);
+    } else {
+      // add category to selectedBrands
+      setSelectedBrands([...selectedBrands, brandId]);
+    }
+  };
   return (
     <>
       <div className="container">
@@ -44,15 +79,16 @@ const ShopSection = (props) => {
                 <ul>
                   {categories &&
                     categories.map((category) => (
-                      <li key={category.id}>
-                        <Link
-                          to={{
-                            pathname: `/search`,
-                            search: `search=${search}&page=${page}&categoryId=${category.id}&brandId=${brandId}`,
-                          }}
-                        >
-                          {category.name}
-                        </Link>
+                      <li
+                        key={category.id}
+                        onClick={() => handleToggleCategory(category.id)}
+                        className={
+                          selectedCategories.includes(category.id)
+                            ? "active"
+                            : ""
+                        }
+                      >
+                        {category.name}
                       </li>
                     ))}
                 </ul>
@@ -62,21 +98,14 @@ const ShopSection = (props) => {
                 <ul>
                   {brands &&
                     brands.map((brand) => (
-                      <li key={brand.id}>
-                        <Link
-                          to={
-                            search
-                              ? categoryId
-                                ? `/search/${search}/page/${currentPage}/categories/${categoryId}/brands/${brand.id}`
-                                : `/search/${search}/page/${currentPage}/brands/${brand.id}`
-                              : categoryId
-                              ? `/page/${currentPage}/categories/${categoryId}/brands/${brand.id}`
-                              : `/brands/${brand.id}`
-                          }
-                          className={brand.id === props.brandId ? "active" : ""}
-                        >
-                          {brand.name}
-                        </Link>
+                      <li
+                        key={brand.id}
+                        onClick={() => handleToggleBrand(brand.id)}
+                        className={
+                          selectedBrands.includes(brand.id) ? "active" : ""
+                        }
+                      >
+                        {brand.name}
                       </li>
                     ))}
                 </ul>
@@ -123,11 +152,11 @@ const ShopSection = (props) => {
 
                 {/* Pagination */}
                 <Pagination
-                  currentPage={page}
+                  currentPage={pageId}
                   pageTotal={pageTotal}
-                  search={search ? search : ""}
+                  // search={search ? search : ""}
                   // categoryId={categoryId}
-                  brandId={brandId}
+                  // brandId={brandId}
                 />
               </div>
             </div>

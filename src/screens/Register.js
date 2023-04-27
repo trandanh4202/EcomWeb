@@ -7,7 +7,6 @@ import { register } from "../Redux/Action/UserAction";
 import Header from "./../components/Header";
 
 const Register = ({ location, history }) => {
-  window.scrollTo(0, 0);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");

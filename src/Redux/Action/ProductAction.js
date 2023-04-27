@@ -14,7 +14,7 @@ import { logout } from "./UserAction";
 
 // PRODUCT LIST
 export const listProduct =
-  (search = " ", page, categoryId, brandId) =>
+  (search = "", pageId = "", categoryId, brandId) =>
   async (dispatch) => {
     try {
       dispatch({
@@ -22,7 +22,7 @@ export const listProduct =
       });
 
       const { data } = await axios.get(
-        `/api/Products?search=${search}&page=${page}&categoryId=${categoryId}&brandId=${brandId}`
+        `/api/Products?search=${search}&page=${pageId}&categoryId=${categoryId}&brandId=${brandId}`
       );
       dispatch({
         type: PRODUCT_LIST_SUCCESS,

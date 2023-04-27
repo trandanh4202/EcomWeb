@@ -4,12 +4,7 @@ import { Link } from "react-router-dom";
 import Message from "../components/LoadingError/Error";
 import { listCart } from "../Redux/Action/CartAction";
 import { createOrder } from "../Redux/Action/OrderAction";
-import {
-  getAddress,
-  listAddress,
-  saveShippingAddress,
-} from "../Redux/Action/ShippingAction";
-import { ORDER_CREATE_RESET } from "../Redux/Constants/OrderConstants";
+import { getAddress, listAddress } from "../Redux/Action/ShippingAction";
 import Header from "./../components/Header";
 
 const PlaceOrderScreen = ({ history }) => {
@@ -66,19 +61,19 @@ const PlaceOrderScreen = ({ history }) => {
 
   const getAddressList = async () => {
     try {
-      const { data } = await dispatch(listCart());
+      const { data } = await dispatch(listAddress());
       setAddressList(data);
     } catch (error) {
       console.log(error);
     }
   };
   useEffect(() => {
+    dispatch(listCart());
+    dispatch(listAddress());
     if (success) {
       history.push(`/order/${order.id}`);
     }
-    dispatch(listCart());
-    dispatch(listAddress());
-  }, [history, dispatch, success, order]);
+  }, [dispatch, success, history, order]);
 
   return (
     <>
@@ -120,10 +115,7 @@ const PlaceOrderScreen = ({ history }) => {
                       <Link
                         to="#"
                         className="btn btn-primary"
-                        onClick={
-                          () => dispatch(getAddress(address.id))
-                          // setAddressList([])
-                        }
+                        onClick={() => dispatch(getAddress(address.id))}
                       >
                         Select
                       </Link>

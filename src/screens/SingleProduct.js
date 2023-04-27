@@ -29,8 +29,16 @@ const SingleProduct = ({ history, match }) => {
   const cartList = useSelector((state) => state.cartList);
   const { cartLists } = cartList;
 
+  const userDetails = useSelector((state) => state.userDetails);
+  const { userInfo } = userDetails;
+
   const AddToCartHanddle = (e) => {
     e.preventDefault();
+    if (!userInfo) {
+      // Kiểm tra trạng thái đăng nhập
+      alert("Bạn cần đăng nhập để thực hiện chức năng này!");
+      return;
+    }
     dispatch(addToCart2(productId, quantity));
     if (dispatch({ type: CART_ADD_ITEM_SUCCESS })) {
       if (cartLists.some((item) => item.productId === productId)) {

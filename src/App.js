@@ -20,69 +20,7 @@ const App = () => {
     <Router>
       <Switch>
         <Route path="/" component={HomeScreen} exact />
-        <Route path="/search/:search" component={HomeScreen} exact />
-        <Route path="/page/:currentPage" component={HomeScreen} exact />
-        <Route path="/brands/:brandId" component={HomeScreen} exact />
-        <Route path="/categories/:categoryId" component={HomeScreen} exact />
-        <Route
-          path="/search/:search/page/:currentPage"
-          component={HomeScreen}
-          exact
-        />
-        <Route
-          path="/search/:search/categories/:categoryId"
-          component={HomeScreen}
-          exact
-        />
-        <Route
-          path="/search/:search/page/:currentPage/categories/:categoryId"
-          component={HomeScreen}
-          exact
-        />
-        <Route
-          path="/search/:search/brands/:brandId"
-          component={HomeScreen}
-          exact
-        />
-        <Route
-          path="/search/:search/page/:currentPage/brands/:brandId"
-          component={HomeScreen}
-          exact
-        />
-        <Route
-          path="/page/:currentPage/categories/:categoryId/brands/:brandId"
-          component={HomeScreen}
-          exact
-        />
-        <Route
-          path="/search/:search/page/:currentPage/categories/:categoryId/brands/:brandId"
-          component={HomeScreen}
-          exact
-        />
-        <Route
-          path="/search=:search/page/:currentPage/categories/:categoryId/brands/:brandId"
-          component={HomeScreen}
-          exact
-        />
-        <Route
-          path="/search"
-          render={({ location }) => {
-            const searchParams = new URLSearchParams(location.search);
-            const search = searchParams.get("search");
-            const page = searchParams.get("page");
-            const categoryId = searchParams.get("categoryId");
-            const brandId = searchParams.get("brandId");
-
-            return (
-              <HomeScreen
-                search={search}
-                page={page}
-                categoryId={categoryId}
-                brandId={brandId}
-              />
-            );
-          }}
-        />
+        <Route path="/page/:pageId" component={HomeScreen} exact />
 
         <Route path="/products/:id" component={SingleProduct} />
         <Route path="/login" component={Login} />
