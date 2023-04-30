@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "./../components/Header";
-import { PayPalButton } from "react-paypal-button-v2";
 import { useDispatch, useSelector } from "react-redux";
-import { getOrderDetails, payOrder } from "../Redux/Action/OrderAction";
+import {
+  getOrderDetails,
+  getOrders,
+  payOrder,
+} from "../Redux/Action/OrderAction";
 import Loading from "../components/LoadingError/Loading";
 import Message from "../components/LoadingError/Error";
-import axios from "axios";
-import { ORDER_PAY_RESET } from "../Redux/Constants/OrderConstants";
 
 const OrderScreen = ({ match }) => {
-  window.scrollTo(0, 0);
-  const [sdkReady, setSdkReady] = useState(false);
   const orderId = match.params.id;
   const dispatch = useDispatch();
 
@@ -19,12 +18,13 @@ const OrderScreen = ({ match }) => {
   const { orderDetail, loading, error } = orderDetails;
 
   const orderPay = useSelector((state) => state.orderPay);
-  const { loading: loadingPay, success: successPay } = orderPay;
+  const { data } = orderPay;
 
   if (!loading) {
     const addDecimals = (num) => {
       return (Math.round(num * 100) / 100).toFixed(2);
     };
+
     orderDetail.cartItems.itemsPrice = addDecimals(
       orderDetail.cartItems.reduce(
         (acc, item) => acc + item.product.price * item.quantity,
@@ -56,37 +56,33 @@ const OrderScreen = ({ match }) => {
   const cartList = useSelector((state) => state.cartList);
   const { paymentMethod } = cartList;
 
-  const orderCreate = useSelector((state) => state.orderCreate);
-  const { order } = orderCreate;
+  const orderData = useSelector((state) => state.orderData);
+  const { order } = orderData;
 
   useEffect(() => {
-    const addPayPalScript = async () => {
-      // const { data: clientId } = await axios.get("/api/config/paypal");
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src = `https://www.paypal.com/sdk/js?client-id=Aa0CRVe_s-Re4igGVDSJw2nHebXNvRWSTajR_IvjTSJSWXz6Fh1os6WkD4E5knGOxkuISq4uTopUBJI-`;
-      script.async = true;
-      script.onload = () => {
-        setSdkReady(true);
-      };
-      document.body.appendChild(script);
-    };
-    if (!orderDetail || successPay) {
-      dispatch({ type: ORDER_PAY_RESET });
-      // dispatch(getOrderDetails(orderId));
-    } else if (!order.isPaid) {
-      if (!window.paypal) {
-        addPayPalScript();
-      } else {
-        setSdkReady(true);
-      }
-    }
+    dispatch(getOrders(orderId));
     dispatch(getOrderDetails(orderId));
-  }, [dispatch, orderId, successPay, order]);
+    dispatch(payOrder(orderId));
+  }, [dispatch, orderId]);
 
-  const successPaymentHandler = (paymentResult) => {
-    dispatch(payOrder(orderId, paymentResult));
+  const successPaymentHandler = () => {
+    const width = 500;
+    const height = 600;
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
+    const paypalWindow = window.open(
+      data,
+      "PayPal",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+    const intervalId = setInterval(() => {
+      if (paypalWindow.closed) {
+        clearInterval(intervalId);
+        window.location.reload();
+      }
+    }, 1000);
   };
+
   return (
     <>
       <Header />
@@ -226,7 +222,7 @@ const OrderScreen = ({ match }) => {
                     </tr>
                   </tbody>
                 </table>
-                {!order.isPaid && (
+                {/* {!order.isPaid && (
                   <div className="col-12">
                     {loadingPay && <Loading />}
                     {!sdkReady ? (
@@ -238,6 +234,9 @@ const OrderScreen = ({ match }) => {
                       />
                     )}
                   </div>
+                )} */}
+                {!order.isPaid && (
+                  <button onClick={successPaymentHandler}>paypal</button>
                 )}
               </div>
             </div>

@@ -3,6 +3,9 @@ import {
   ORDER_CREATE_REQUEST,
   ORDER_CREATE_RESET,
   ORDER_CREATE_SUCCESS,
+  ORDER_DATA_FAIL,
+  ORDER_DATA_REQUEST,
+  ORDER_DATA_SUCCESS,
   ORDER_DETAILS_FAIL,
   ORDER_DETAILS_REQUEST,
   ORDER_DETAILS_SUCCESS,
@@ -45,12 +48,28 @@ export const orderDetailsReducer = (
   }
 };
 
+export const orderDataReducer = (
+  state = { loading: true, order: [] },
+  action
+) => {
+  switch (action.type) {
+    case ORDER_DATA_REQUEST:
+      return { ...state, loading: true };
+    case ORDER_DATA_SUCCESS:
+      return { loading: false, order: action.payload };
+    case ORDER_DATA_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
 export const orderPayReducer = (state = {}, action) => {
   switch (action.type) {
     case ORDER_PAY_REQUEST:
       return { loading: true };
     case ORDER_PAY_SUCCESS:
-      return { loading: false, success: true };
+      return { loading: false, data: action.payload };
     case ORDER_PAY_FAIL:
       return { loading: false, error: action.payload };
     case ORDER_PAY_RESET:

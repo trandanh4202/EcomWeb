@@ -3,6 +3,9 @@ import {
   ORDER_CREATE_FAIL,
   ORDER_CREATE_REQUEST,
   ORDER_CREATE_SUCCESS,
+  ORDER_DATA_FAIL,
+  ORDER_DATA_REQUEST,
+  ORDER_DATA_SUCCESS,
   ORDER_DETAILS_FAIL,
   ORDER_DETAILS_REQUEST,
   ORDER_DETAILS_SUCCESS,
@@ -48,7 +51,6 @@ export const createOrder = (order) => async (dispatch, getState) => {
   }
 };
 
-//ORDER DETAILS
 export const getOrderDetails = (orderId) => async (dispatch, getState) => {
   try {
     dispatch({
@@ -86,39 +88,73 @@ export const getOrderDetails = (orderId) => async (dispatch, getState) => {
   }
 };
 
-export const payOrder =
-  (orderId, paymentResult) => async (dispatch, getState) => {
-    try {
-      dispatch({ type: ORDER_PAY_REQUEST });
+//ORDER DETAILS
+export const getOrders = (orderId) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: ORDER_DATA_REQUEST,
+    });
+    const {
+      userLogin: { userInfo },
+    } = getState();
 
-      const {
-        userLogin: { userInfo },
-      } = getState();
-
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      };
-
-      const { data } = await axios.post(
-        `/api/Orders/PaypalCheckout/${orderId}`,
-        { orderId, paymentResult },
-        config
-      );
-      dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
-    } catch (error) {
-      const message =
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message;
-      if (message === "Not authorized, token failed") {
-        dispatch(logout());
-      }
-      dispatch({
-        type: ORDER_PAY_FAIL,
-        payload: message,
-      });
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+    const { data } = await axios.get(`/api/Orders/${orderId}`, config);
+    dispatch({
+      type: ORDER_DATA_SUCCESS,
+      payload: data.data,
+    });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message;
+    if (message === "Not authorized, token failed") {
+      dispatch(logout());
     }
-  };
+    dispatch({
+      type: ORDER_DATA_FAIL,
+      payload: message,
+    });
+  }
+};
+
+export const payOrder = (orderId) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: ORDER_PAY_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    const { data } = await axios.put(
+      `/api/Orders/PaypalCheckout/${orderId}`,
+      orderId,
+      config
+    );
+    dispatch({ type: ORDER_PAY_SUCCESS, payload: data.data });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message;
+    if (message === "Not authorized, token failed") {
+      dispatch(logout());
+    }
+    dispatch({
+      type: ORDER_PAY_FAIL,
+      payload: message,
+    });
+  }
+};

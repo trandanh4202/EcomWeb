@@ -70,6 +70,7 @@ const PlaceOrderScreen = ({ history }) => {
   useEffect(() => {
     dispatch(listCart());
     dispatch(listAddress());
+    dispatch(getAddress(shippingAddress[0].id));
     if (success) {
       history.push(`/order/${order.id}`);
     }

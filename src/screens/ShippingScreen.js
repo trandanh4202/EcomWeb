@@ -49,12 +49,13 @@ const ShippingScreen = ({ history }) => {
   const [addressList, setAddressList] = useState([]);
   const getAddressList = async () => {
     try {
-      const { data } = await dispatch(listCart());
+      const { data } = await dispatch(listAddress());
       setAddressList(data);
     } catch (error) {
       console.log(error);
     }
   };
+
   useEffect(() => {
     dispatch(listAddress());
   }, [dispatch]);

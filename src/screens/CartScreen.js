@@ -12,11 +12,11 @@ import { listProductDeTails } from "../Redux/Action/ProductAction";
 
 const CartScreen = ({ match, location, history }) => {
   window.scrollTo(0, 0);
+  const dispatch = useDispatch();
 
   const removeFromCartHandle = (id) => {
     dispatch(removeFromCart2(id));
   };
-  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(listCart());

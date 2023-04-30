@@ -47,9 +47,10 @@ export const addressReducer = (state = { shippingAddress: [] }, action) => {
         ...state,
         loading: false,
         success: true,
-        shippingAddress: state.shippingAddress.filter(
-          (x) => x.id !== action.payload.data
-        ),
+        // shippingAddress: state.shippingAddress.filter(
+        //   (x) => x.id !== action.payload.data
+        // ),
+        shippingAddress: action.payload,
       };
     case DELETE_ADDRESS_FAIL:
       return { ...state, loading: false, error: action.payload };

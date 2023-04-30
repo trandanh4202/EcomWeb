@@ -36,9 +36,7 @@ export const cartListReducer = (state = { cartLists: [] }, action) => {
         ...state,
         loading: false,
         success: true,
-        cartLists: state.cartLists.filter(
-          (x) => x.productId !== action.payload.data
-        ),
+        cartLists: action.payload,
       };
     case CART_REMOVE_ITEM_FAIL:
       return { ...state, loading: false, error: action.payload };

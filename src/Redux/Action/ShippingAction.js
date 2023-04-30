@@ -141,11 +141,12 @@ export const removeAddress = (id) => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.delete(`/api/Addresses/${id}`, config);
+    const { success } = await axios.delete(`/api/Addresses/${id}`, config);
+    const { data } = await axios.get("/api/Addresses", config);
 
     dispatch({
       type: DELETE_ADDRESS_SUCCESS,
-      payload: data,
+      payload: data.data,
     });
   } catch (error) {
     dispatch({
