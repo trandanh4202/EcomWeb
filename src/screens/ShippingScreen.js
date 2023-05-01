@@ -12,25 +12,23 @@ import {
 import store from "../Redux/store";
 
 const ShippingScreen = ({ history }) => {
-  // window.scrollTo(0, 0);
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
   const [detail, setDetail] = useState("");
+  const [showForm, setShowForm] = useState(false);
 
   const dispatch = useDispatch();
   const address = useSelector((state) => state.address);
   const { loading, error, shippingAddress } = address;
-
   const submitHandler = (e) => {
     e.preventDefault();
-
-    // if (!province || !district || !ward || !detail) {
-    //   alert("Vui lòng nhập đủ thông tin.");
-    // } else {
-    dispatch(saveShippingAddress({ province, district, ward, detail }));
-    history.push("/payment");
-    // }
+    if (province && district && ward && detail) {
+      dispatch(saveShippingAddress({ province, district, ward, detail }));
+      history.push("/payment");
+    } else {
+      alert("Please fill in all required fields.");
+    }
   };
 
   const removeAddressHandle = (id) => {
@@ -110,52 +108,67 @@ const ShippingScreen = ({ history }) => {
           </div>
         </div>
       </div>
-      <div className="container d-flex flex-column justify-content-center align-items-center login-center">
+      <div className="container d-flex flex-column justify-content-center align-items-center login-center ">
         <button
           type="button"
-          className="btn btn-primary btn-sm mb-5"
+          className="btn btn-primary mb-3"
           data-bs-toggle="modal"
           data-bs-target="#exampleModal"
           onClick={getAddressList}
         >
-          {" "}
-          xem tất cả địa chỉ
+          View All Addresses
         </button>
-        <form
-          className="Login col-md-8 col-lg-4 col-11"
-          onSubmit={submitHandler}
+        <button
+          type="button"
+          className="btn btn-primary mb-3"
+          onClick={() => setShowForm(true)}
         >
-          <h6>DELIVERY ADDRESS</h6>
-          <input
-            type="text"
-            placeholder="Enter Province"
-            value={province}
-            // required
-            onChange={(e) => setProvince(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Enter district"
-            value={district}
-            // required
-            onChange={(e) => setDistrict(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Enter ward"
-            value={ward}
-            // required
-            onChange={(e) => setWard(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Enter detail"
-            value={detail}
-            // required
-            onChange={(e) => setDetail(e.target.value)}
-          />
-          <button type="submit">Continue</button>
-        </form>
+          Add New Address
+        </button>
+        <button
+          type="button"
+          className="btn btn-primary mb-3"
+          onClick={() => history.push("/payment")}
+        >
+          Continue Without Adding New Address
+        </button>
+        {showForm && (
+          <form
+            className="Login col-md-8 col-lg-4 col-11 mb-3"
+            onSubmit={submitHandler}
+          >
+            <h6>DELIVERY ADDRESS</h6>
+            <input
+              type="text"
+              placeholder="Enter Province"
+              value={province}
+              // required
+              onChange={(e) => setProvince(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Enter district"
+              value={district}
+              // required
+              onChange={(e) => setDistrict(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Enter ward"
+              value={ward}
+              // required
+              onChange={(e) => setWard(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Enter detail"
+              value={detail}
+              // required
+              onChange={(e) => setDetail(e.target.value)}
+            />
+            <button type="submit">Continue</button>
+          </form>
+        )}
       </div>
     </>
   );

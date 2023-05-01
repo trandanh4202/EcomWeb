@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ORDER_LIST_RESET } from "../Constants/OrderConstants";
 import {
   USER_DETAILS_RESET,
   // USER_DETAILS_SUCCESS,
@@ -59,6 +60,9 @@ export const logout = () => async (dispatch) => {
   });
   dispatch({
     type: USER_DETAILS_RESET,
+  });
+  dispatch({
+    type: ORDER_LIST_RESET,
   });
   //optional
   document.location.href = "/login";

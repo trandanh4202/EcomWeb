@@ -60,8 +60,8 @@ const OrderScreen = ({ match }) => {
   const { order } = orderData;
 
   useEffect(() => {
-    dispatch(getOrders(orderId));
     dispatch(getOrderDetails(orderId));
+    dispatch(getOrders(orderId));
     dispatch(payOrder(orderId));
   }, [dispatch, orderId]);
 
@@ -129,7 +129,9 @@ const OrderScreen = ({ match }) => {
 
                     <div className="bg-danger p-2 col-12">
                       <p className="text-white text-center text-sm-start">
-                        {!order.isPaid ? " Not Paid " : " Paid "}
+                        {order && order.paidAt === null
+                          ? " Not Paid "
+                          : " Paid "}
                       </p>
                     </div>
                   </div>
@@ -175,7 +177,7 @@ const OrderScreen = ({ match }) => {
                           <img src={item.product.imageUrl} alt="product" />
                         </div>
                         <div className="col-md-5 col-6 d-flex align-items-center">
-                          <Link to={`/product/${item.product.id}`}>
+                          <Link to={`/products/${item.product.id}`}>
                             <h6>{item.product.name}</h6>
                           </Link>
                         </div>
@@ -222,20 +224,8 @@ const OrderScreen = ({ match }) => {
                     </tr>
                   </tbody>
                 </table>
-                {/* {!order.isPaid && (
-                  <div className="col-12">
-                    {loadingPay && <Loading />}
-                    {!sdkReady ? (
-                      <Loading />
-                    ) : (
-                      <PayPalButton
-                        amount={orderDetail.cartItems.totalPrice}
-                        onSuccess={successPaymentHandler}
-                      />
-                    )}
-                  </div>
-                )} */}
-                {!order.isPaid && (
+
+                {order && order.paidAt === null && (
                   <button onClick={successPaymentHandler}>paypal</button>
                 )}
               </div>

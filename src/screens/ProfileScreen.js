@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Header from "../components/Header";
 import ProfileTabs from "../components/profileComponents/ProfileTabs";
+import { listOrders } from "../Redux/Action/OrderAction";
 import { getUserDetails, login } from "../Redux/Action/UserAction";
 import Orders from "./../components/profileComponents/Orders";
 
@@ -12,12 +13,14 @@ const ProfileScreen = () => {
 
   const userDetails = useSelector((state) => state.userDetails);
   const { userInfo } = userDetails;
-
+  const orderList = useSelector((state) => state.orderList);
+  const { loading, error, orders } = orderList;
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getUserDetails());
-  }, []);
+    dispatch(listOrders());
+  }, [dispatch]);
 
   return (
     <>
@@ -72,7 +75,7 @@ const ProfileScreen = () => {
                     aria-selected="false"
                   >
                     Orders List
-                    <span className="badge2">3</span>
+                    <span className="badge2">{orders ? orders.length : 0}</span>
                   </button>
                 </div>
               </div>
@@ -98,7 +101,7 @@ const ProfileScreen = () => {
               role="tabpanel"
               aria-labelledby="v-pills-profile-tab"
             >
-              <Orders />
+              <Orders orders={orders} loading={loading} error={error} />
             </div>
           </div>
         </div>

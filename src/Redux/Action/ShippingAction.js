@@ -20,8 +20,7 @@ import {
 } from "../Constants/ShippingConstants";
 
 export const saveShippingAddress =
-  ({ province, district, ward, detail }) =>
-  async (dispatch, getState) => {
+  (province, district, ward, detail) => async (dispatch, getState) => {
     try {
       dispatch({
         type: ADD_ADDRESS_REQUEST,
