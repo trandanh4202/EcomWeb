@@ -154,7 +154,9 @@ const Orders = (props) => {
                     {orders.map((order) => (
                       <tr
                         className={`${
-                          order.isPaid ? "alert-success" : "alert-danger"
+                          order.paidAt !== null
+                            ? "alert-success"
+                            : "alert-danger"
                         }`}
                         key={order.id}
                       >
