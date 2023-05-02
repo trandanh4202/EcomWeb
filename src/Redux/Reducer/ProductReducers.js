@@ -7,8 +7,17 @@ import {
   PRODUCT_DETAILS_REQUEST,
   PRODUCT_DETAILS_SUCCESS,
   PRODUCT_LIST_FAIL,
+  PRODUCT_LIST_FORYOU_FAIL,
+  PRODUCT_LIST_FORYOU_REQUEST,
+  PRODUCT_LIST_FORYOU_SUCCESS,
   PRODUCT_LIST_REQUEST,
   PRODUCT_LIST_SUCCESS,
+  REVIEW_LIST_FAIL,
+  REVIEW_LIST_REQUEST,
+  REVIEW_LIST_SUCCESS,
+  VIEWS_DETAILS_FAIL,
+  VIEWS_DETAILS_REQUEST,
+  VIEWS_DETAILS_SUCCESS,
 } from "../Constants/ProductConstants";
 
 //PRODUCT LIST
@@ -31,10 +40,7 @@ export const productListReducer = (state = { products: [] }, action) => {
 };
 
 //SINGLE PRODUCT
-export const productDetailsReducer = (
-  state = { product: { reivew: [] } },
-  action
-) => {
+export const productDetailsReducer = (state = { product: {} }, action) => {
   switch (action.type) {
     case PRODUCT_DETAILS_REQUEST:
       return { ...state, loading: true };
@@ -58,6 +64,53 @@ export const productCreateReviewReducer = (state = {}, action) => {
       return { loading: false, error: action.payload };
     case PRODUCT_CREATE_REVIEW_RESET:
       return {};
+    default:
+      return state;
+  }
+};
+
+export const reviewListReducer = (state = { reviews: [] }, action) => {
+  switch (action.type) {
+    case REVIEW_LIST_REQUEST:
+      return { loading: true };
+    case REVIEW_LIST_SUCCESS:
+      return {
+        loading1: false,
+        page: action.payload.pagination.currentPage,
+        pageTotal: action.payload.pagination.totalPage,
+        reviews: action.payload.reviews,
+      };
+    case REVIEW_LIST_FAIL:
+      return { loading: false, error1: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const productListForYouReducer = (state = { products: [] }, action) => {
+  switch (action.type) {
+    case PRODUCT_LIST_FORYOU_REQUEST:
+      return { loading: true, products: [] };
+    case PRODUCT_LIST_FORYOU_SUCCESS:
+      return {
+        loading: false,
+        products: action.payload,
+      };
+    case PRODUCT_LIST_FORYOU_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const viewsReducer = (state = {}, action) => {
+  switch (action.type) {
+    case VIEWS_DETAILS_REQUEST:
+      return { loading: true };
+    case VIEWS_DETAILS_SUCCESS:
+      return { loading: false, statae: action.payload };
+    case VIEWS_DETAILS_FAIL:
+      return { loading: false, error: action.payload };
     default:
       return state;
   }

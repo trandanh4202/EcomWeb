@@ -4,7 +4,10 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { getOrderDetails } from "../../Redux/Action/OrderAction";
-import { createProductReview } from "../../Redux/Action/ProductAction";
+import {
+  createProductReview,
+  listReviewProduct,
+} from "../../Redux/Action/ProductAction";
 import Message from "../LoadingError/Error";
 import Loading from "../LoadingError/Loading";
 
@@ -30,7 +33,7 @@ const Orders = (props) => {
   const handleSubmit = (productId, orderId) => {
     const rating = ratings[productId] || 0;
     const comment = comments[productId] || "";
-    console.log(rating, comment, productId, orderId);
+    // console.log(rating, comment, productId, orderId);
     dispatch(createProductReview(rating, comment, productId, orderId));
   };
 

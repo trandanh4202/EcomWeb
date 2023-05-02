@@ -4,12 +4,18 @@ import Rating from "../components/homeComponents/Rating";
 import { Link } from "react-router-dom";
 import Message from "./../components/LoadingError/Error";
 import { useDispatch, useSelector } from "react-redux";
-import { listProductDeTails } from "../Redux/Action/ProductAction";
+import {
+  listProductDeTails,
+  listReviewProduct,
+  views,
+} from "../Redux/Action/ProductAction";
 import Loading from "../components/LoadingError/Loading";
 import { addToCart2, listCart } from "../Redux/Action/CartAction";
 import { toast } from "react-toastify";
 import Toast from "../components/LoadingError/Toast";
 import { CART_ADD_ITEM_SUCCESS } from "../Redux/Constants/CartConstants";
+import moment from "moment";
+import axios from "axios";
 
 const SingleProduct = ({ history, match }) => {
   const [quantity, setQuantity] = useState(1);
@@ -31,6 +37,9 @@ const SingleProduct = ({ history, match }) => {
 
   const userDetails = useSelector((state) => state.userDetails);
   const { userInfo } = userDetails;
+
+  const reviewList = useSelector((state) => state.reviewList);
+  const { loading1, reviews, error1, pageTotal } = reviewList;
 
   const AddToCartHanddle = (e) => {
     e.preventDefault();
@@ -58,8 +67,10 @@ const SingleProduct = ({ history, match }) => {
   };
 
   useEffect(() => {
+    dispatch(listReviewProduct(productId));
     dispatch(listProductDeTails(productId));
     dispatch(listCart());
+    dispatch(views(productId));
   }, [dispatch, productId]);
 
   return (
@@ -134,58 +145,21 @@ const SingleProduct = ({ history, match }) => {
             <div className="row my-5">
               <div className="col-md-6">
                 <h6 className="mb-3">REVIEWS</h6>
-                <Message variant={"alert-info mt-3"}>No Reviews</Message>
-                <div className="mb-5 mb-md-3 bg-light p-3 shadow-sm rounded">
-                  <strong>Admin Doe</strong>
-                  <Rating />
-                  <span>Jan 12 2021</span>
-                  <div className="alert alert-info mt-3">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since the 1500s, when an unknown
-                    printer took a galley of type and scrambled it to make a
-                    type specimen book
+                {product &&
+                  product.reviewQuantity &&
+                  product.reviewQuantity === 0 && (
+                    <Message variant={"alert-info mt-3"}>No Reviews</Message>
+                  )}
+                {reviews?.map((review) => (
+                  <div className="mb-5 mb-md-3 bg-light p-3 shadow-sm rounded">
+                    <strong>{review.name}</strong>
+                    <Rating value={review.rating} />
+                    <span>{moment(review.date).calendar()}</span>
+                    <div className="alert alert-info mt-3">
+                      {review.comment}
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="col-md-6">
-                <h6>WRITE A CUSTOMER REVIEW</h6>
-                <div className="my-4"></div>
-
-                <form>
-                  <div className="my-4">
-                    <strong>Rating</strong>
-                    <select className="col-12 bg-light p-3 mt-2 border-0 rounded">
-                      <option value="">Select...</option>
-                      <option value="1">1 - Poor</option>
-                      <option value="2">2 - Fair</option>
-                      <option value="3">3 - Good</option>
-                      <option value="4">4 - Very Good</option>
-                      <option value="5">5 - Excellent</option>
-                    </select>
-                  </div>
-                  <div className="my-4">
-                    <strong>Comment</strong>
-                    <textarea
-                      row="3"
-                      className="col-12 bg-light p-3 mt-2 border-0 rounded"
-                    ></textarea>
-                  </div>
-                  <div className="my-3">
-                    <button className="col-12 bg-black border-0 p-3 rounded text-white">
-                      SUBMIT
-                    </button>
-                  </div>
-                </form>
-                <div className="my-3">
-                  <Message variant={"alert-warning"}>
-                    Please{" "}
-                    <Link to="/login">
-                      " <strong>Login</strong> "
-                    </Link>{" "}
-                    to write a review{" "}
-                  </Message>
-                </div>
+                ))}
               </div>
             </div>
           </>

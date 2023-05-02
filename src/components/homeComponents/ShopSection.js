@@ -8,15 +8,9 @@ import Message from "../LoadingError/Error";
 import { getUserDetails } from "../../Redux/Action/UserAction";
 import { listCart } from "../../Redux/Action/CartAction";
 import { listBrands, listCategories } from "../../Redux/Action/FilterAction";
-import {
-  Link,
-  useLocation,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const ShopSection = (props) => {
-  window.scrollTo(0, 0);
   const dispatch = useDispatch();
 
   const productList = useSelector((state) => state.productList);

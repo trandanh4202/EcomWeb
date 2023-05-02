@@ -5,6 +5,7 @@ import ContactInfo from "./../components/homeComponents/ContactInfo";
 import CalltoActionSection from "./../components/homeComponents/CalltoActionSection";
 import Footer from "./../components/Footer";
 import { useParams } from "react-router";
+import ProductRecommendations from "../components/homeComponents/ProductRecommendations";
 const HomeScreen = ({ match }) => {
   // window.location.reload();
   const pageId = match.params.pageId;
@@ -12,6 +13,7 @@ const HomeScreen = ({ match }) => {
   return (
     <div>
       <Header />
+      <ProductRecommendations />
       <ShopSection pageId={pageId} />
       <CalltoActionSection />
       <ContactInfo />
