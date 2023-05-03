@@ -23,88 +23,142 @@ const ShopSection = (props) => {
   const { brands } = brandList;
   const search = "";
   const { pageId } = props;
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedBrands, setSelectedBrands] = useState([]);
 
+  const [selectedCategories, setSelectedCategories] = useState(null);
+  const [selectedBrands, setSelectedBrands] = useState(null);
+  const [selectedSorts, setsSlectedSorts] = useState(null);
+  const [priceFrom, setPriceFrom] = useState(null);
+  const [priceTo, setPriceTo] = useState(null);
+
+  const [hasPrice, setHasPrice] = useState(false);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // if (priceFrom !== null && priceTo !== null) {
+    //   setHasPrice(true);
+    //   dispatch(
+    //     listProduct(
+    //       search,
+    //       priceFrom,
+    //       priceTo,
+    //       selectedSorts,
+    //       selectedCategories,
+    //       selectedBrands,
+    //       pageId
+    //     )
+    //   );
+    // }
+  };
   useEffect(() => {
-    dispatch(listProduct(search, pageId, selectedCategories, selectedBrands));
+    dispatch(
+      listProduct(
+        search,
+        selectedSorts,
+        pageId,
+        selectedCategories,
+        selectedBrands
+      )
+    );
     dispatch(getUserDetails());
     dispatch(listCart());
-  }, [dispatch, search, pageId, selectedCategories, selectedBrands]);
+  }, [
+    dispatch,
+    search,
+    selectedSorts,
+    pageId,
+    selectedCategories,
+    selectedBrands,
+  ]);
 
   useEffect(() => {
     dispatch(listCategories());
     dispatch(listBrands());
   }, []);
 
-  const handleToggleCategory = (categoryId) => {
-    const index = selectedCategories.indexOf(categoryId);
-    if (index >= 0) {
-      // remove category from selectedCategories
-      const updatedCategories = [...selectedCategories];
-      updatedCategories.splice(index, 1);
-      setSelectedCategories(updatedCategories);
-    } else {
-      // add category to selectedCategories
-      setSelectedCategories([...selectedCategories, categoryId]);
-    }
-  };
-
-  const handleToggleBrand = (brandId) => {
-    const index = selectedBrands.indexOf(brandId);
-    if (index >= 0) {
-      // remove category from selectedBrands
-      const updateBrands = [...selectedBrands];
-      updateBrands.splice(index, 1);
-      setSelectedBrands(updateBrands);
-    } else {
-      // add category to selectedBrands
-      setSelectedBrands([...selectedBrands, brandId]);
-    }
-  };
   return (
     <>
       <div className="container">
         <div className="section">
           <div className="row">
             <div className="col-lg-3 col-md-3">
-              <div className="category-box">
+              <div className=" category-box">
                 <h3>Category</h3>
-                <ul>
+                <select
+                  value={selectedCategories}
+                  onChange={(event) =>
+                    setSelectedCategories(event.target.value)
+                  }
+                >
+                  <option value="">-- Choose a category --</option>
                   {categories &&
                     categories.map((category) => (
-                      <li
-                        key={category.id}
-                        onClick={() => handleToggleCategory(category.id)}
-                        className={
-                          selectedCategories.includes(category.id)
-                            ? "active"
-                            : ""
-                        }
-                      >
+                      <option key={category.id} value={category.id}>
                         {category.name}
-                      </li>
+                      </option>
                     ))}
-                </ul>
+                </select>
               </div>
-              <div className="brand-box">
+              <div className=" brand-box">
                 <h3>Brand</h3>
-                <ul>
+                <select
+                  value={selectedBrands}
+                  onChange={(event) => setSelectedBrands(event.target.value)}
+                >
+                  <option value="">-- Choose a brand --</option>
                   {brands &&
                     brands.map((brand) => (
-                      <li
-                        key={brand.id}
-                        onClick={() => handleToggleBrand(brand.id)}
-                        className={
-                          selectedBrands.includes(brand.id) ? "active" : ""
-                        }
-                      >
+                      <option key={brand.id} value={brand.id}>
                         {brand.name}
-                      </li>
+                      </option>
                     ))}
-                </ul>
+                </select>
+              </div>
+              <div className="sort-box">
+                <h3>Sort</h3>
+                <select
+                  value={selectedSorts}
+                  onChange={(event) => setsSlectedSorts(event.target.value)}
+                >
+                  <option value>-- Choose a brand --</option>
+                  <option value={""}>Sort name A-Z</option>
+                  <option value={"Name-"}>Sort name Z - A</option>
+                  <option value={"Price"}>Sort Price Low To High</option>
+                  <option value={"Price-"}>Sort Price High To Low</option>
+                  <option value={"View"}>Sort View</option>
+                  <option value={"Sale"}>Sort Sale</option>
+                </select>
+              </div>
+              <div className="price-box">
+                <h3>Price</h3>
+                <form
+                  className="d-flex w-100 flex-column from-price "
+                  onSubmit={handleSubmit} // sử dụng hàm handleSubmit để xử lý sự kiện submit
+                >
+                  <div className="d-flex w-100 justify-content-between from-price ">
+                    <input
+                      type="input"
+                      name="from"
+                      placeholder="Price from"
+                      value={priceFrom}
+                      onChange={(e) => setPriceFrom(e.target.value)}
+                      className="input-price"
+                    />
+                    <input
+                      type="input"
+                      name="to"
+                      placeholder="Price to"
+                      value={priceTo}
+                      onChange={(e) => setPriceTo(e.target.value)}
+                      className="input-price"
+                    />
+                  </div>
+                  <button type="submit" className="w-100">
+                    Check
+                  </button>
+                </form>
               </div>
             </div>
+
             <div className="col-lg-9 col-md-9 article">
               <div className="shopcontainer row">
                 {loading ? (

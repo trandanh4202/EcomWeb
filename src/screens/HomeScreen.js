@@ -6,14 +6,17 @@ import CalltoActionSection from "./../components/homeComponents/CalltoActionSect
 import Footer from "./../components/Footer";
 import { useParams } from "react-router";
 import ProductRecommendations from "../components/homeComponents/ProductRecommendations";
+import { useSelector } from "react-redux";
 const HomeScreen = ({ match }) => {
   // window.location.reload();
   const pageId = match.params.pageId;
+  const userDetails = useSelector((state) => state.userDetails);
+  const { userInfo } = userDetails;
 
   return (
     <div>
       <Header />
-      <ProductRecommendations />
+      {userInfo && <ProductRecommendations />}
       <ShopSection pageId={pageId} />
       <CalltoActionSection />
       <ContactInfo />

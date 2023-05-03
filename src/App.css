@@ -655,14 +655,72 @@ textarea:focus {
 
 .slick-prev:before,
 .slick-next:before {
-  color: rgba(25, 107, 208) !important;
+  font-size: 50px !important;
+  z-index: 10;
+  color: rgb(243, 243, 243);
 }
 
-.slick-prev {
+.slick-prev,
+.slick-next {
+  width: 50px !important;
+  height: 50px !important;
+  z-index: 10;
+}
+.slick-dots li button:before {
+  font-size: 20px !important;
+}
+/* .slick-prev {
   left: 0;
   z-index: 1;
 }
 
 .slick-next {
   right: 0;
+} */
+
+.card:hover {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+}
+
+.card-img-top {
+  height: 300px; /* kích thước hình ảnh */
+  object-fit: contain; /* để hình ảnh đúng tỷ lệ và không bị bóp méo */
+}
+.rcm-product {
+  background-color: rgb(38, 138, 220);
+  padding: 20px;
+}
+.slick-slide {
+  padding: 0 8px;
+}
+
+.card-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+select {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  width: 100%;
+}
+
+option {
+  padding: 5px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #333;
+}
+
+.input-price {
+  width: 100px;
+}
+.from-price {
+  margin-bottom: 10px;
 }

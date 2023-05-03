@@ -23,16 +23,25 @@ import { logout } from "./UserAction";
 
 // PRODUCT LIST
 export const listProduct =
-  (search = "", pageId = "", categoryId, brandId) =>
+  (search = "", sortBy = "", pageId, from, to, categoryId, brandId) =>
   async (dispatch) => {
     try {
       dispatch({
         type: PRODUCT_LIST_REQUEST,
       });
+      let link = `/api/Products?search=${search}&sortBy=${sortBy}&page=${pageId}`;
+      if (from !== null && to !== null) {
+        link = `/api/Products?search=${search}&from=${from}&to=${to}&sortBy=${sortBy}&page=${pageId}`;
+      }
+      if (categoryId !== null) {
+        link += `&categoryId=${categoryId}`;
+      }
+      if (brandId !== null) {
+        link += `&brandId=${brandId}`;
+      }
+      console.log(link);
+      const { data } = await axios.get(link);
 
-      const { data } = await axios.get(
-        `/api/Products?search=${search}&page=${pageId}&categoryId=${categoryId}&brandId=${brandId}`
-      );
       dispatch({
         type: PRODUCT_LIST_SUCCESS,
         payload: data.data.data,
