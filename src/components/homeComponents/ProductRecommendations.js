@@ -21,15 +21,12 @@ const ProductRecommendations = () => {
     slidesToShow: 4,
     slidesToScroll: 4,
     initialSlide: 0,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    pauseOnHover: true,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
+          slidesToShow: 2,
+          slidesToScroll: 2,
           infinite: true,
           dots: true,
         },
@@ -52,25 +49,32 @@ const ProductRecommendations = () => {
     ],
   };
   return (
-    <div className="container my-5">
+    <div
+      className="container my-5 rcm-product"
+      style={{ backgroundColor: "rgb(38, 138, 220)" }}
+    >
       <h3 className="mb-4 text-center">Recommended Products</h3>
       <Slider {...settings}>
-        {products.map((product) => (
-          <div key={product.id} className="card h-100">
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="card-img-top"
-            />
-            <div className="card-body">
-              <h5 className="card-title">{product.name}</h5>
-              <p className="card-text">{`$${product.price}`}</p>
-              <Link to={`/products/${product.id}`} className="btn btn-primary">
-                View Product
-              </Link>
+        {products &&
+          products.map((product) => (
+            <div key={product.id} className="card h-100">
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className="card-img-top "
+              />
+              <div className="card-body">
+                <h5 className="card-title">{product.name}</h5>
+                <p className="card-text">{`$${product.price}`}</p>
+                <Link
+                  to={`/products/${product.id}`}
+                  className="btn btn-primary"
+                >
+                  View Product
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </Slider>
     </div>
   );
