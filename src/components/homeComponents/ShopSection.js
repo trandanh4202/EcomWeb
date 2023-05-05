@@ -34,20 +34,20 @@ const ShopSection = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // if (priceFrom !== null && priceTo !== null) {
-    //   setHasPrice(true);
-    //   dispatch(
-    //     listProduct(
-    //       search,
-    //       priceFrom,
-    //       priceTo,
-    //       selectedSorts,
-    //       selectedCategories,
-    //       selectedBrands,
-    //       pageId
-    //     )
-    //   );
-    // }
+    if (priceFrom !== null && priceTo !== null) {
+      setHasPrice(true);
+      dispatch(
+        listProduct(
+          search,
+          priceFrom,
+          priceTo,
+          selectedSorts,
+          selectedCategories,
+          selectedBrands,
+          pageId
+        )
+      );
+    }
   };
   useEffect(() => {
     dispatch(
