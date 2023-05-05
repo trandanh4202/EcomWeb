@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { getOrderDetails } from "../../Redux/Action/OrderAction";
 import {
+  checkReview,
   createProductReview,
   listReviewProduct,
 } from "../../Redux/Action/ProductAction";
@@ -16,6 +17,8 @@ const Orders = (props) => {
   const orderDetails = useSelector((state) => state.orderDetails);
   const { orderDetail } = orderDetails;
   const dispatch = useDispatch();
+  const reviewChecked = useSelector((state) => state.reviewChecked);
+  const { review } = reviewChecked;
 
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
@@ -27,9 +30,20 @@ const Orders = (props) => {
   const handleCommentChange = (event, productId) => {
     setComments({ ...comments, [productId]: event.target.value });
   };
+
   const getOrderDetail = (orderId) => {
     dispatch(getOrderDetails(orderId));
+    if (orderDetail && orderDetail.cartItems) {
+      for (const product of orderDetail.cartItems) {
+        console.log(product.product.id);
+        const reviewed = dispatch(checkReview(orderId, product.product.id));
+        if (!reviewed) {
+          break; // Stop looping through products
+        }
+      }
+    }
   };
+
   const handleSubmit = (productId, orderId) => {
     const rating = ratings[productId] || 0;
     const comment = comments[productId] || "";
@@ -71,39 +85,68 @@ const Orders = (props) => {
                           className="img-fluid rounded"
                         />
                       </div>
-                      <div className="col-8">
-                        <h4>{item.product.name}</h4>
-                        <div>
-                          {[...Array(5)].map((_, i) => (
-                            <i
-                              key={i}
-                              className={`far fa-star ${
-                                i < ratings[item.product.id]
-                                  ? "text-warning"
-                                  : ""
-                              }`}
-                              style={{
-                                fontSize: "24px",
-                                cursor: "pointer",
-                              }}
-                              onClick={() =>
-                                handleRatingChange(i + 1, item.product.id)
+                      {review ? (
+                        <div className="col-8">
+                          <h4>{item.product.name}</h4>
+                          <div>
+                            {[...Array(5)].map((_, i) => (
+                              <i
+                                key={i}
+                                className={`far fa-star ${
+                                  i < review.rating ? "text-warning" : ""
+                                }`}
+                                style={{
+                                  fontSize: "24px",
+                                  cursor: "pointer",
+                                }}
+                              ></i>
+                            ))}
+                          </div>
+                          <div className="mt-3">
+                            <textarea
+                              className="form-control"
+                              rows="5"
+                              value={review.comment}
+                              readOnly={true}
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="col-8">
+                          <h4>{item.product.name}</h4>
+                          <div>
+                            {[...Array(5)].map((_, i) => (
+                              <i
+                                key={i}
+                                className={`far fa-star ${
+                                  i < ratings[item.product.id]
+                                    ? "text-warning"
+                                    : ""
+                                }`}
+                                style={{
+                                  fontSize: "24px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                  handleRatingChange(i + 1, item.product.id)
+                                }
+                              ></i>
+                            ))}
+                          </div>
+                          <div className="mt-3">
+                            <textarea
+                              className="form-control"
+                              rows="5"
+                              placeholder="Write your review here..."
+                              value={comments[item.product.id] || ""}
+                              onChange={(e) =>
+                                handleCommentChange(e, item.product.id)
                               }
-                            ></i>
-                          ))}
+                            />
+                          </div>
                         </div>
-                        <div className="mt-3">
-                          <textarea
-                            className="form-control"
-                            rows="5"
-                            placeholder="Write your review here..."
-                            value={comments[item.product.id] || ""}
-                            onChange={(e) =>
-                              handleCommentChange(e, item.product.id)
-                            }
-                          />
-                        </div>
-                      </div>
+                      )}
+
                       <button
                         className="btn btn-primary"
                         onClick={() =>
@@ -176,7 +219,9 @@ const Orders = (props) => {
                             ? moment(order.date).calendar()
                             : moment(order.paidAt).calendar()}
                         </td>
-                        <td>${order.total}</td>
+                        <td>
+                          {order.total} {""} VNĐ
+                        </td>
                         <td>
                           {order.paidAt !== null ? (
                             <button

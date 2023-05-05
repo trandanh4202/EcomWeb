@@ -86,28 +86,31 @@ const CartScreen = ({ match, location, history }) => {
                     <h4>{item.product.name}</h4>
                   </Link>
                 </div>
-                <div className="cart-qty col-md-2 col-sm-5 mt-md-5 mt-3 mt-md-0 d-flex flex-column justify-content-center">
+                <div className="cart-qty col-md-2 col-sm-5 mt-md-5 mt-3 mt-md-0 d-flex flex-column  align-items-center">
                   <h6>QUANTITY</h6>
-                  <button
-                    onClick={() =>
-                      handleQtyChange(item.product.id, item.quantity - 1)
-                    }
-                  >
-                    -
-                  </button>
-                  <input
-                    value={item.quantity}
-                    onChange={(e) =>
-                      handleQtyChange(item.product.id, e.target.value)
-                    }
-                  />
-                  <button
-                    onClick={() =>
-                      handleQtyChange(item.product.id, item.quantity + 1)
-                    }
-                  >
-                    +
-                  </button>
+                  <div className="d-flex">
+                    <button
+                      onClick={() =>
+                        handleQtyChange(item.product.id, item.quantity - 1)
+                      }
+                    >
+                      -
+                    </button>
+                    <input
+                      value={item.quantity}
+                      onChange={(e) =>
+                        handleQtyChange(item.product.id, e.target.value)
+                      }
+                      className=" justify-content-center align-items-center text-center input-width "
+                    />
+                    <button
+                      onClick={() =>
+                        handleQtyChange(item.product.id, item.quantity + 1)
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
                 <div className="cart-price mt-3 mt-md-0 col-md-2 align-items-sm-end align-items-start  d-flex flex-column justify-content-center col-sm-7">
                   <h6>Price</h6>

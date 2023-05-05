@@ -6,6 +6,7 @@ import {
   productDetailsReducer,
   productListForYouReducer,
   productListReducer,
+  reviewCheckedReducer,
   reviewListReducer,
 } from "./Reducer/ProductReducers";
 import {
@@ -52,6 +53,7 @@ const reducer = combineReducers({
   orderList: orderListReducer,
   orderPay: orderPayReducer,
   reviewList: reviewListReducer,
+  reviewChecked: reviewCheckedReducer,
   productListForYou: productListForYouReducer,
 });
 
@@ -69,12 +71,19 @@ const shippingAddressFromLocalStorage = localStorage.getItem("shippingAddress")
   ? JSON.parse(localStorage.getItem("shippingAddress"))
   : {};
 
+const paymentMethodLocalstorage = localStorage.getItem("paymentMethod")
+  ? JSON.parse(localStorage.getItem("paymentMethod"))
+  : {};
+
 const initialState = {
-  cart: {
-    cartItems: cartItemsFromLocalStorage,
+  cartList: {
     shippingAddress: shippingAddressFromLocalStorage,
+    paymentMethod: paymentMethodLocalstorage,
   },
   userLogin: { userInfo: userInfoFromLocalStorage },
+  orderData: {
+    paymentMethod: paymentMethodLocalstorage,
+  },
 };
 
 const middleware = [thunk];

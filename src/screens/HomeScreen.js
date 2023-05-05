@@ -10,6 +10,8 @@ import { useSelector } from "react-redux";
 const HomeScreen = ({ match }) => {
   // window.location.reload();
   const pageId = match.params.pageId;
+  const search = match.params.search;
+
   const userDetails = useSelector((state) => state.userDetails);
   const { userInfo } = userDetails;
 
@@ -17,7 +19,7 @@ const HomeScreen = ({ match }) => {
     <div>
       <Header />
       {userInfo && <ProductRecommendations />}
-      <ShopSection pageId={pageId} />
+      <ShopSection pageId={pageId} search={search} />
       <CalltoActionSection />
       <ContactInfo />
       <Footer />

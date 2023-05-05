@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Pagination = (props) => {
-  const { currentPage, pageTotal, keyword = "" } = props;
+  const { currentPage, pageTotal, productId, search = "", queryParams } = props;
+
   return (
     pageTotal > 1 && (
       <nav>
@@ -14,11 +15,12 @@ const Pagination = (props) => {
             >
               <Link
                 className="page-link"
-                to={
-                  keyword
-                    ? `/search/${keyword}/page/${x + 1}`
-                    : `/page/${x + 1}`
-                }
+                to={{
+                  pathname: queryParams ? "/" : `/products/${productId}`,
+                  search: queryParams
+                    ? `?${queryParams.toString()}&currentPage=${x + 1}`
+                    : `?currentPage=${x + 1}`,
+                }}
               >
                 {x + 1}
               </Link>

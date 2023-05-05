@@ -8,10 +8,19 @@ import Message from "../LoadingError/Error";
 import { getUserDetails } from "../../Redux/Action/UserAction";
 import { listCart } from "../../Redux/Action/CartAction";
 import { listBrands, listCategories } from "../../Redux/Action/FilterAction";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const ShopSection = (props) => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get("search") || "";
+  const currentPageQuery = searchParams.get("currentPage");
+
+  const queryParams = new URLSearchParams();
+  if (searchQuery) {
+    queryParams.append("search", searchQuery);
+  }
 
   const productList = useSelector((state) => state.productList);
   const { loading, products, error, pageTotal } = productList;
@@ -21,9 +30,7 @@ const ShopSection = (props) => {
 
   const brandList = useSelector((state) => state.brandList);
   const { brands } = brandList;
-  const search = "";
   const { pageId } = props;
-
   const [selectedCategories, setSelectedCategories] = useState(null);
   const [selectedBrands, setSelectedBrands] = useState(null);
   const [selectedSorts, setsSlectedSorts] = useState(null);
@@ -38,13 +45,13 @@ const ShopSection = (props) => {
       setHasPrice(true);
       dispatch(
         listProduct(
-          search,
+          searchQuery,
+          selectedSorts,
+          currentPageQuery,
           priceFrom,
           priceTo,
-          selectedSorts,
           selectedCategories,
-          selectedBrands,
-          pageId
+          selectedBrands
         )
       );
     }
@@ -52,9 +59,11 @@ const ShopSection = (props) => {
   useEffect(() => {
     dispatch(
       listProduct(
-        search,
+        searchQuery,
         selectedSorts,
-        pageId,
+        currentPageQuery,
+        priceFrom,
+        priceTo,
         selectedCategories,
         selectedBrands
       )
@@ -63,9 +72,11 @@ const ShopSection = (props) => {
     dispatch(listCart());
   }, [
     dispatch,
-    search,
+    searchQuery,
     selectedSorts,
-    pageId,
+    currentPageQuery,
+    // priceFrom,
+    // priceTo,
     selectedCategories,
     selectedBrands,
   ]);
@@ -74,7 +85,6 @@ const ShopSection = (props) => {
     dispatch(listCategories());
     dispatch(listBrands());
   }, []);
-
   return (
     <>
       <div className="container">
@@ -190,7 +200,25 @@ const ShopSection = (props) => {
                               value={product.averageRating}
                               text={`${product.reviewQuantity} reviews`}
                             />
-                            <h3>${product.price}</h3>
+                            {product.percentSale === 0 ? (
+                              <h3>
+                                {product.price} {""}
+                                VNĐ
+                              </h3>
+                            ) : (
+                              <>
+                                <h3 className="old-price">
+                                  {product.price} {""}
+                                  VNĐ
+                                </h3>
+                                <h3>
+                                  {product.price -
+                                    (product.price * product.percentSale) /
+                                      100}{" "}
+                                  VNĐ
+                                </h3>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -200,9 +228,10 @@ const ShopSection = (props) => {
 
                 {/* Pagination */}
                 <Pagination
-                  currentPage={pageId}
+                  currentPage={currentPageQuery}
                   pageTotal={pageTotal}
-                  // search={search ? search : ""}
+                  search={searchQuery}
+                  queryParams={queryParams}
                   // categoryId={categoryId}
                   // brandId={brandId}
                 />

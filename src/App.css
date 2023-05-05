@@ -384,11 +384,12 @@ textarea:focus {
   margin-top: 20px;
   padding: 20px 0;
   border: 0;
-  background-color: #1cb803;
+  background-color: #60aee2;
   border-radius: 5px;
   text-transform: uppercase;
   color: white;
 }
+
 .Login button a,
 .Login2 button a {
   text-transform: uppercase;
@@ -469,7 +470,7 @@ textarea:focus {
   margin-top: 20px;
   text-transform: uppercase;
   font-size: 13px;
-  background-color: #1cb803;
+  background-color: #60aee2;
   color: #ffffff;
 }
 /* orders */
@@ -562,7 +563,7 @@ textarea:focus {
   border: 0px;
   text-transform: uppercase;
   font-size: 13px;
-  background-color: #1cb803;
+  background-color: #60aee2;
   color: #ffffff;
 }
 .cart-buttons a:nth-child(1) button {
@@ -639,7 +640,7 @@ textarea:focus {
   border: 0px;
   text-transform: uppercase;
   font-size: 13px;
-  background-color: #1cb803;
+  background-color: #60aee2;
   color: #ffffff;
 }
 
@@ -678,6 +679,7 @@ textarea:focus {
   right: 0;
 } */
 
+/* for you */
 .card:hover {
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
   transform: translateY(-5px);
@@ -702,6 +704,7 @@ textarea:focus {
   text-overflow: ellipsis;
 }
 
+/* filter */
 select {
   padding: 10px;
   font-size: 16px;
@@ -723,4 +726,76 @@ option {
 }
 .from-price {
   margin-bottom: 10px;
+}
+
+/* shop */
+.old-price {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.shoptext p {
+  white-space: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 50px;
+}
+.border-product {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+  height: 450px;
+}
+
+.btn-success,
+button:hover {
+  background-color: #1f8fdb;
+}
+
+.input-width {
+  width: 60px;
+}
+
+/* check-pass */
+.password-wrapper {
+  position: relative;
+}
+
+.password-input {
+  padding-right: 30px;
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.password-toggle-icon i {
+  font-size: 1rem;
+}
+
+.password-input.show-password {
+  -webkit-text-security: none;
+  -moz-text-security: none;
+  -ms-text-security: none;
+}
+
+.password-toggle-icon:hover i {
+  color: #007bff;
+}
+
+.password-toggle-icon.active i {
+  color: #007bff;
+}
+
+.password-toggle-icon.active i.fa-eye-slash {
+  display: none;
+}
+
+.password-toggle-icon.active i.fa-eye {
+  display: block;
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserDetails, logout } from "../Redux/Action/UserAction";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -18,7 +18,13 @@ const Header = () => {
   useEffect(() => {
     dispatch(getUserDetails());
   }, [dispatch]);
+
+  const location = useLocation();
   const [search, setSearch] = useState();
+  React.useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    setSearch(searchParams.get("search") || "");
+  }, [location]);
   const submitHandler = (e) => {
     e.preventDefault();
     if (search.trim()) {

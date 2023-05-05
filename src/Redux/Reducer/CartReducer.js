@@ -25,7 +25,7 @@ export const cartListReducer = (state = { cartLists: [] }, action) => {
     case CART_LIST_REQUEST:
       return { loading: true, ...state, cartLists: [] };
     case CART_LIST_SUCCESS:
-      return { loading: false, cartLists: action.payload };
+      return { loading: false, ...state, cartLists: action.payload };
     case CART_LIST_FAIL:
       return { loading: false, error: action.payload };
 

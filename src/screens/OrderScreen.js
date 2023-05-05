@@ -9,6 +9,7 @@ import {
 } from "../Redux/Action/OrderAction";
 import Loading from "../components/LoadingError/Loading";
 import Message from "../components/LoadingError/Error";
+import moment from "moment/moment";
 
 const OrderScreen = ({ match }) => {
   const orderId = match.params.id;
@@ -22,29 +23,31 @@ const OrderScreen = ({ match }) => {
 
   if (!loading) {
     const addDecimals = (num) => {
-      return (Math.round(num * 100) / 100).toFixed(2);
+      return Math.round(num).toFixed(0);
     };
 
     orderDetail.cartItems.itemsPrice = addDecimals(
-      orderDetail.cartItems.reduce(
-        (acc, item) => acc + item.product.price * item.quantity,
-        0
-      )
+      orderDetail.cartItems.reduce((total, cartItem) => {
+        return total + cartItem.price * cartItem.quantity;
+      }, 0)
     );
-
+    //shipping
     orderDetail.cartItems.shippingPrice = addDecimals(
-      orderDetail.cartItems.itemsPrice > 1000000 ? 0 : 500000
+      orderDetail.cartItems.itemsPrice > 0 ? 0 : 500000
+    );
+    //total price sale
+
+    orderDetail.cartItems.salePrice = addDecimals(
+      orderDetail.cartItems.reduce((total, item) => {
+        const itemPrice = item.product.price * item.quantity;
+        const itemDiscount = (itemPrice * item.product.percentSale) / 100;
+        return total + itemDiscount;
+      }, 0)
     );
 
-    orderDetail.cartItems.taxPrice = addDecimals(
-      Number((0.15 * orderDetail.cartItems.itemsPrice).toFixed(2))
+    orderDetail.cartItems.totalPrice = addDecimals(
+      orderDetail.cartItems.itemsPrice - orderDetail.cartItems.salePrice
     );
-
-    orderDetail.cartItems.totalPrice = (
-      Number(orderDetail.cartItems.itemsPrice) +
-      Number(orderDetail.cartItems.shippingPrice) +
-      Number(orderDetail.cartItems.taxPrice)
-    ).toFixed(2);
   }
 
   const userDetails = useSelector((state) => state.userDetails);
@@ -54,7 +57,7 @@ const OrderScreen = ({ match }) => {
   const { addressDetails } = addressDetail;
 
   const cartList = useSelector((state) => state.cartList);
-  const { paymentMethod } = cartList;
+  const { paypalMethod } = cartList;
 
   const orderData = useSelector((state) => state.orderData);
   const { order } = orderData;
@@ -63,6 +66,8 @@ const OrderScreen = ({ match }) => {
     dispatch(getOrderDetails(orderId));
     dispatch(getOrders(orderId));
     dispatch(payOrder(orderId));
+    // dispatch(getAddress());
+    console.log(orderId);
   }, [dispatch, orderId]);
 
   const successPaymentHandler = () => {
@@ -80,7 +85,7 @@ const OrderScreen = ({ match }) => {
         clearInterval(intervalId);
         window.location.reload();
       }
-    }, 1000);
+    }, 2000);
   };
 
   return (
@@ -124,16 +129,21 @@ const OrderScreen = ({ match }) => {
                     <h5>
                       <strong>Order info</strong>
                     </h5>
-                    <p>Shipping: {addressDetails.province}</p>
-                    <p>Pay method: {paymentMethod}</p>
-
-                    <div className="bg-danger p-2 col-12">
-                      <p className="text-white text-center text-sm-start">
-                        {order && order.paidAt === null
-                          ? " Not Paid "
-                          : " Paid "}
-                      </p>
-                    </div>
+                    <p>Shipping: {order?.address?.province ?? ""}</p>
+                    <p>Pay method: {paypalMethod}</p>
+                    {!order?.paidAt ? (
+                      <div className="bg-danger p-2 col-12">
+                        <p className="text-white text-center text-sm-start">
+                          Not Paid
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="bg-info p-2 col-12">
+                        <p className="text-white text-center text-sm-start">
+                          Paid on {moment(order.paidAt).calendar()}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -150,8 +160,8 @@ const OrderScreen = ({ match }) => {
                       <strong>Deliver to</strong>
                     </h5>
                     <p>
-                      Address: {addressDetails.district}, {""}{" "}
-                      {addressDetails.ward}, {""} {addressDetails.detail}
+                      Address: {order?.address?.district}, {""}{" "}
+                      {order?.address?.ward}, {""} {order?.address?.detail}
                     </p>
                     <div className="bg-danger p-1 col-12">
                       <p className="text-white text-center text-sm-start">
@@ -212,9 +222,9 @@ const OrderScreen = ({ match }) => {
                     </tr>
                     <tr>
                       <td>
-                        <strong>Tax</strong>
+                        <strong>Sale</strong>
                       </td>
-                      <td>${orderDetail.cartItems.taxPrice}</td>
+                      <td>${orderDetail.cartItems.salePrice}</td>
                     </tr>
                     <tr>
                       <td>

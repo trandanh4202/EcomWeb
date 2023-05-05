@@ -12,6 +12,9 @@ import {
   PRODUCT_LIST_FORYOU_SUCCESS,
   PRODUCT_LIST_REQUEST,
   PRODUCT_LIST_SUCCESS,
+  REVIEW_CHECKED_FAIL,
+  REVIEW_CHECKED_REQUEST,
+  REVIEW_CHECKED_SUCCESS,
   REVIEW_LIST_FAIL,
   REVIEW_LIST_REQUEST,
   REVIEW_LIST_SUCCESS,
@@ -69,13 +72,29 @@ export const productCreateReviewReducer = (state = {}, action) => {
   }
 };
 
-export const reviewListReducer = (state = { reviews: [] }, action) => {
+export const reviewCheckedReducer = (state = { review: [] }, action) => {
+  switch (action.type) {
+    case REVIEW_CHECKED_REQUEST:
+      return { loading: true };
+    case REVIEW_CHECKED_SUCCESS:
+      return {
+        loading: false,
+        reviews: action.payload,
+      };
+    case REVIEW_CHECKED_FAIL:
+      return { loading: false, error1: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const reviewListReducer = (state = { reviews: {} }, action) => {
   switch (action.type) {
     case REVIEW_LIST_REQUEST:
       return { loading: true };
     case REVIEW_LIST_SUCCESS:
       return {
-        loading1: false,
+        loading: false,
         page: action.payload.pagination.currentPage,
         pageTotal: action.payload.pagination.totalPage,
         reviews: action.payload.reviews,

@@ -12,6 +12,9 @@ import {
   PRODUCT_LIST_FORYOU_SUCCESS,
   PRODUCT_LIST_REQUEST,
   PRODUCT_LIST_SUCCESS,
+  REVIEW_CHECKED_FAIL,
+  REVIEW_CHECKED_REQUEST,
+  REVIEW_CHECKED_SUCCESS,
   REVIEW_LIST_FAIL,
   REVIEW_LIST_REQUEST,
   REVIEW_LIST_SUCCESS,
@@ -140,6 +143,43 @@ export const listReviewProduct = (productId, page) => async (dispatch) => {
     });
   }
 };
+
+export const checkReview =
+  (orderId, productId) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: REVIEW_CHECKED_REQUEST,
+      });
+
+      const {
+        userLogin: { userInfo },
+      } = getState();
+      const config = {
+        headers: {
+          "content-type": "application/json",
+          authorization: `bearer ${userInfo.token}`,
+        },
+      };
+
+      const { data } = await axios.post(
+        `api/Reviews/IsReviewed?orderId=${orderId}&productId=${productId}`,
+        { orderId, productId },
+        config
+      );
+      dispatch({
+        type: REVIEW_CHECKED_SUCCESS,
+        payload: data,
+      });
+    } catch (error) {
+      dispatch({
+        type: REVIEW_CHECKED_FAIL,
+        payload:
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      });
+    }
+  };
 
 export const listProductForYou = () => async (dispatch, getState) => {
   try {

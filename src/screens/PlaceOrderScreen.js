@@ -19,7 +19,6 @@ const PlaceOrderScreen = ({ history }) => {
 
   const addressDetail = useSelector((state) => state.addressDetail);
   const { addressDetails } = addressDetail;
-
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
@@ -27,36 +26,35 @@ const PlaceOrderScreen = ({ history }) => {
   const { order, success, error } = orderCreate;
 
   // calculate price
-  const addDecimals = (num) => {
-    return (Math.round(num * 100) / 100).toFixed(2);
-  };
+  if (cartLists) {
+    const addDecimals = (num) => {
+      return Math.round(num).toFixed(0);
+    };
 
-  cartLists.itemsPrice = addDecimals(
-    cartLists.reduce((acc, item) => acc + item.product.price * item.quantity, 0)
-  );
-
-  cartLists.shippingPrice = addDecimals(
-    cartLists.itemsPrice > 1000000 ? 0 : 500000
-  );
-
-  cartLists.taxPrice = addDecimals(
-    Number((0.15 * cartLists.itemsPrice).toFixed(2))
-  );
-
-  cartLists.totalPrice = (
-    Number(cartLists.itemsPrice) +
-    Number(cartLists.shippingPrice) +
-    Number(cartLists.taxPrice)
-  ).toFixed(2);
-
-  const placeOrderHandler = () => {
-    dispatch(
-      createOrder({
-        addressId: addressDetails.id,
-        productIds: cartLists.map((item) => item.productId),
-      })
+    cartLists.itemsPrice = addDecimals(
+      cartLists.reduce((total, cartItem) => {
+        return total + cartItem.product.price * cartItem.quantity;
+      }, 0)
     );
-  };
+    //shipping
+    cartLists.shippingPrice = addDecimals(
+      cartLists.itemsPrice > 0 ? 0 : 500000
+    );
+    //total price sale
+
+    cartLists.salePrice = addDecimals(
+      cartLists.reduce((total, item) => {
+        const itemPrice = item.product.price * item.quantity;
+        const itemDiscount = (itemPrice * item.product.percentSale) / 100;
+        return total + itemDiscount;
+      }, 0)
+    );
+
+    cartLists.totalPrice = addDecimals(
+      cartLists.itemsPrice - cartLists.salePrice
+    );
+  }
+
   const [addressList, setAddressList] = useState([]);
 
   const getAddressList = async () => {
@@ -67,14 +65,25 @@ const PlaceOrderScreen = ({ history }) => {
       console.log(error);
     }
   };
+  const placeOrderHandler = () => {
+    dispatch(
+      createOrder({
+        addressId: addressDetails.id,
+        productIds: cartLists.map((item) => item.productId),
+      })
+    );
+  };
+  const firstAddress = shippingAddress[0]?.id;
   useEffect(() => {
     dispatch(listCart());
     dispatch(listAddress());
-    dispatch(getAddress(shippingAddress[0].id));
+    console.log(firstAddress);
+    dispatch(getAddress(firstAddress));
+
     if (success) {
       history.push(`/order/${order.id}`);
     }
-  }, [dispatch, success, history, order]);
+  }, [dispatch, success, history, order, firstAddress]);
 
   return (
     <>
@@ -169,10 +178,10 @@ const PlaceOrderScreen = ({ history }) => {
                 </h5>
                 <p>
                   Shipping:{" "}
-                  {addressDetails.province
-                    ? addressDetails.province
-                    : shippingAddress.length > 0
-                    ? shippingAddress[0].province
+                  {addressDetails?.province
+                    ? addressDetails?.province
+                    : shippingAddress?.length > 0
+                    ? shippingAddress[0]?.province
                     : ""}
                 </p>
                 <p>Pay method: {paymentMethod}</p>
@@ -193,22 +202,22 @@ const PlaceOrderScreen = ({ history }) => {
                 </h5>
                 <p>
                   Address:{" "}
-                  {addressDetails.district
-                    ? addressDetails.district
-                    : shippingAddress.length > 0
-                    ? shippingAddress[0].district
+                  {addressDetails?.district
+                    ? addressDetails?.district
+                    : shippingAddress?.length > 0
+                    ? shippingAddress[0]?.district
                     : ""}{" "}
                   , {""}{" "}
-                  {addressDetails.ward
-                    ? addressDetails.ward
-                    : shippingAddress.length > 0
-                    ? shippingAddress[0].ward
+                  {addressDetails?.ward
+                    ? addressDetails?.ward
+                    : shippingAddress?.length > 0
+                    ? shippingAddress[0]?.ward
                     : ""}
                   , {""}{" "}
-                  {addressDetails.detail
-                    ? addressDetails.detail
-                    : shippingAddress.length > 0
-                    ? shippingAddress[0].detail
+                  {addressDetails?.detail
+                    ? addressDetails?.detail
+                    : shippingAddress?.length > 0
+                    ? shippingAddress[0]?.detail
                     : ""}
                 </p>
               </div>
@@ -218,11 +227,11 @@ const PlaceOrderScreen = ({ history }) => {
 
         <div className="row order-products justify-content-between">
           <div className="col-lg-8">
-            {cartLists.length === 0 ? (
+            {cartLists?.length === 0 ? (
               <Message variant="alert-info mt-5">Your cart is empty</Message>
             ) : (
               <>
-                {cartLists.map((item, index) => (
+                {cartLists?.map((item, index) => (
                   <div className="order-product row" key={index}>
                     <div className="col-md-3 col-6">
                       <img
@@ -256,29 +265,29 @@ const PlaceOrderScreen = ({ history }) => {
                   <td>
                     <strong>Products</strong>
                   </td>
-                  <td>${cartLists.itemsPrice}</td>
+                  <td>${cartLists?.itemsPrice}</td>
                 </tr>
                 <tr>
                   <td>
                     <strong>Shipping</strong>
                   </td>
-                  <td>${cartLists.shippingPrice}</td>
+                  <td>${cartLists?.shippingPrice}</td>
                 </tr>
                 <tr>
                   <td>
-                    <strong>Tax</strong>
+                    <strong>Sale</strong>
                   </td>
-                  <td>${cartLists.taxPrice}</td>
+                  <td>${cartLists?.salePrice}</td>
                 </tr>
                 <tr>
                   <td>
                     <strong>Total</strong>
                   </td>
-                  <td>${cartLists.totalPrice}</td>
+                  <td>${cartLists?.totalPrice}</td>
                 </tr>
               </tbody>
             </table>
-            {cartLists.length === 0 ? null : (
+            {cartLists?.length === 0 ? null : (
               <button type="submit" onClick={placeOrderHandler}>
                 PLACE ORDER
               </button>

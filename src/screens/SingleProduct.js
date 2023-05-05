@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "./../components/Header";
 import Rating from "../components/homeComponents/Rating";
-import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Message from "./../components/LoadingError/Error";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,11 +15,17 @@ import { toast } from "react-toastify";
 import Toast from "../components/LoadingError/Toast";
 import { CART_ADD_ITEM_SUCCESS } from "../Redux/Constants/CartConstants";
 import moment from "moment";
-import axios from "axios";
+import Pagination from "../components/homeComponents/pagination";
 
 const SingleProduct = ({ history, match }) => {
   const [quantity, setQuantity] = useState(1);
-  const productId = match.params.id;
+  const productId = match.params.productId;
+  // const reviewId = match.params.reviewId;
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get("search") || "";
+  const currentPageQuery = searchParams.get("currentPage");
+
   const dispatch = useDispatch();
   const toastId = React.useRef(null);
   const toastObject = {
@@ -39,7 +45,7 @@ const SingleProduct = ({ history, match }) => {
   const { userInfo } = userDetails;
 
   const reviewList = useSelector((state) => state.reviewList);
-  const { loading1, reviews, error1, pageTotal } = reviewList;
+  const { reviews, page, pageTotal } = reviewList;
 
   const AddToCartHanddle = (e) => {
     e.preventDefault();
@@ -67,11 +73,14 @@ const SingleProduct = ({ history, match }) => {
   };
 
   useEffect(() => {
-    dispatch(listReviewProduct(productId));
     dispatch(listProductDeTails(productId));
+  }, []);
+
+  useEffect(() => {
+    dispatch(listReviewProduct(productId, currentPageQuery));
     dispatch(listCart());
     dispatch(views(productId));
-  }, [dispatch, productId]);
+  }, [dispatch, productId, currentPageQuery]);
 
   return (
     <>
@@ -145,11 +154,9 @@ const SingleProduct = ({ history, match }) => {
             <div className="row my-5">
               <div className="col-md-6">
                 <h6 className="mb-3">REVIEWS</h6>
-                {product &&
-                  product.reviewQuantity &&
-                  product.reviewQuantity === 0 && (
-                    <Message variant={"alert-info mt-3"}>No Reviews</Message>
-                  )}
+                {product.reviewQuantity === 0 && (
+                  <Message variant={"alert-info mt-3"}>No Reviews</Message>
+                )}
                 {reviews?.map((review) => (
                   <div className="mb-5 mb-md-3 bg-light p-3 shadow-sm rounded">
                     <strong>{review.name}</strong>
@@ -161,6 +168,11 @@ const SingleProduct = ({ history, match }) => {
                   </div>
                 ))}
               </div>
+              <Pagination
+                currentPage={page}
+                pageTotal={pageTotal}
+                productId={productId}
+              />
             </div>
           </>
         )}
