@@ -88,7 +88,7 @@ export const reviewCheckedReducer = (state = { review: [] }, action) => {
   }
 };
 
-export const reviewListReducer = (state = { reviews: {} }, action) => {
+export const reviewListReducer = (state = { reviews: [] }, action) => {
   switch (action.type) {
     case REVIEW_LIST_REQUEST:
       return { loading: true };

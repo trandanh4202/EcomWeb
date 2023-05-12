@@ -135,7 +135,7 @@ const ShopSection = (props) => {
                   <option value={"Price"}>Sort Price Low To High</option>
                   <option value={"Price-"}>Sort Price High To Low</option>
                   <option value={"View"}>Sort View</option>
-                  <option value={"Sale"}>Sort Sale</option>
+                  <option value={"BestSale"}>Sort Sale</option>
                 </select>
               </div>
               <div className="price-box">
@@ -200,6 +200,12 @@ const ShopSection = (props) => {
                               value={product.averageRating}
                               text={`${product.reviewQuantity} reviews`}
                             />
+                            {product.percentSale > 0 && (
+                              <span className="percent-sale">
+                                {product.percentSale}% OFF
+                              </span>
+                            )}
+                            <div className="product-favourite">Yêu Thích</div>
                             {product.percentSale === 0 ? (
                               <h3>
                                 {product.price} {""}

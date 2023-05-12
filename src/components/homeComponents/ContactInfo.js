@@ -27,7 +27,7 @@ const ContactInfo = () => {
               <i className="fas fa-envelope"></i>
             </div>
             <h5>Mail</h5>
-            <p>boykhongkhoc2002@gmail.com</p>
+            <p>pdt@ut.edu.vn</p>
           </div>
         </div>
       </div>

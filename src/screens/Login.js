@@ -5,9 +5,11 @@ import Message from "../components/LoadingError/Error";
 import Loading from "../components/LoadingError/Loading";
 import { login } from "../Redux/Action/UserAction";
 import Header from "./../components/Header";
+import GoogleLogin from "react-google-login";
+import FacebookLogin from "react-facebook-login";
 
 const Login = ({ location, history }) => {
-  window.scrollTo(0, 0);
+  // window.scrollTo(0, 0);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -30,6 +32,12 @@ const Login = ({ location, history }) => {
   };
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
+  };
+  const responseGoogle = (response) => {
+    console.log(response);
+  };
+  const responseFacebook = (response) => {
+    console.log(response);
   };
   return (
     <>
@@ -73,6 +81,21 @@ const Login = ({ location, history }) => {
               Create Account
             </Link>
           </p>
+          <GoogleLogin
+            clientId="your-google-client-id"
+            buttonText="Login with Google"
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+            cookiePolicy={"single_host_origin"}
+          />
+          <FacebookLogin
+            appId="your-facebook-app-id"
+            fields="name,email,picture"
+            callback={responseFacebook}
+            cssClass="btn-facebook"
+            icon="fa-facebook"
+            textButton="Login with Facebook"
+          />
         </form>
       </div>
     </>

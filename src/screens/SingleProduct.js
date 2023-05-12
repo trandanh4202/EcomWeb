@@ -157,16 +157,17 @@ const SingleProduct = ({ history, match }) => {
                 {product.reviewQuantity === 0 && (
                   <Message variant={"alert-info mt-3"}>No Reviews</Message>
                 )}
-                {reviews?.map((review) => (
-                  <div className="mb-5 mb-md-3 bg-light p-3 shadow-sm rounded">
-                    <strong>{review.name}</strong>
-                    <Rating value={review.rating} />
-                    <span>{moment(review.date).calendar()}</span>
-                    <div className="alert alert-info mt-3">
-                      {review.comment}
+                {reviews &&
+                  reviews?.map((review) => (
+                    <div className="mb-5 mb-md-3 bg-light p-3 shadow-sm rounded">
+                      <strong>{review.name}</strong>
+                      <Rating value={review.rating} />
+                      <span>{moment(review.date).calendar()}</span>
+                      <div className="alert alert-info mt-3">
+                        {review.comment}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
               <Pagination
                 currentPage={page}

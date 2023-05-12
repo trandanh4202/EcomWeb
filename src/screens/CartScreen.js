@@ -39,7 +39,7 @@ const CartScreen = ({ match, location, history }) => {
     }
   };
 
-  const total = cartLists.reduce((accumulator, currentValue) => {
+  const total = cartLists?.reduce((accumulator, currentValue) => {
     return accumulator + currentValue.quantity * currentValue.product.price;
   }, 0);
 
@@ -48,7 +48,7 @@ const CartScreen = ({ match, location, history }) => {
       <Header />
       {/* Cart */}
       <div className="container">
-        {cartLists.length === 0 ? (
+        {cartLists?.length === 0 ? (
           <div className=" alert alert-info text-center mt-3">
             Your cart is empty
             <Link
@@ -66,11 +66,11 @@ const CartScreen = ({ match, location, history }) => {
             <div className=" alert alert-info text-center mt-3">
               Total Cart cartLists
               <Link className="text-success mx-2" to="/cart">
-                ({cartLists.length})
+                ({cartLists?.length})
               </Link>
             </div>
             {/* cartiterm */}
-            {cartLists.map((item) => (
+            {cartLists?.map((item) => (
               <div className="cart-iterm row">
                 <div
                   onClick={() => removeFromCartHandle(item.product.id)}
